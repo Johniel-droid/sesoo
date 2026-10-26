@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Una singaita o qué? 💘</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg1:#fff7fa;--bg2:#ffc9dc;--card:#fff;--ink:#b3002d;--pink:#ff5c8a;--pink2:#e60026;--soft:#fff0f5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.h{position:absolute;bottom:-40px;animation:up linear infinite;opacity:.6}
+@keyframes up{to{transform:translateY(-110vh) rotate(25deg)}}
+.card{position:relative;z-index:2;background:var(--card);border-radius:28px;padding:28px 22px;width:min(92vw,440px);text-align:center;box-shadow:0 14px 40px rgba(216,27,96,.3);border:3px solid #ffc2d4;overflow:visible}
+.card::before{content:"🎀";position:absolute;top:-24px;right:-6px;font-size:46px;transform:rotate(15deg)}
+.big{font-size:56px;animation:beat 1.2s infinite}
+@keyframes beat{50%{transform:scale(1.15)}}
+h1{font-size:26px;margin:10px 0 18px;line-height:1.25}
+.row{display:flex;gap:14px;justify-content:center;align-items:center;min-height:70px;flex-wrap:wrap}
+button{font:inherit;font-weight:700;border:0;border-radius:999px;cursor:pointer;padding:12px 26px;font-size:18px;transition:transform .15s}
+.yes{background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;box-shadow:0 6px 16px rgba(216,27,96,.4)}
+.yes:hover{transform:scale(1.05)}
+.no{background:#eee;color:#555}
+.no.fly{position:fixed;z-index:5;transition:left .18s,top .18s}
+.places{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.place{background:var(--soft);color:var(--ink);border:2px solid transparent;border-radius:18px;padding:14px 8px;font-size:17px}
+.place span{display:block;font-size:30px}
+.place:hover,.place.sel{border-color:var(--pink);background:#fff;transform:translateY(-2px)}
+.place:last-child:nth-child(odd){grid-column:1/-1}
+label{display:block;font-weight:700;margin:12px 0 6px;text-align:left}
+input[type=text],input[type=date],input[type=time]{width:100%;font:inherit;font-size:18px;padding:12px;border-radius:16px;border:2px solid #ffc2d4;color:var(--ink);background:#fff7fa}
+button:disabled{opacity:.45;cursor:not-allowed}
+.hide{display:none}
+.sub{margin:6px 0 14px;font-size:15px;opacity:.85}
+a.wa{display:inline-block;margin-top:14px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+<main class="card">
+  <section id="s1">
+    <div class="big">🐱🎀</div>
+    <h1 id="q">¿Una singaita o qué?</h1>
+    <div class="row" id="row">
+      <button class="yes" id="yes">Sí 🎀</button>
+      <button class="no" id="no">No</button>
+    </div>
+  </section>
+
+  <section id="s2b" class="hide">
+    <div class="big">📅</div>
+    <h1>Sabía que dirías que sí 🎀<br>¿Cuándo nos vemos? ⏰</h1>
+    <label for="fecha">Fecha</label>
+    <input type="date" id="fecha">
+    <label for="hora">Hora</label>
+    <input type="time" id="hora">
+    <div class="row"><button class="yes" id="ok" disabled>Confirmar 🎀</button></div>
+  </section>
+
+  <section id="s3" class="hide">
+    <div class="big">🎀</div>
+    <h1>¡Es una cita! 🥰</h1>
+    <p class="sub" id="final"></p>
+    <a class="wa" id="wa" target="_blank" rel="noopener"><button class="yes">Avisar por WhatsApp 💌</button></a>
+  </section>
+</main>
+
+<script>
+const msgs=["Ella jura que no 😏"];
+let i=0,scale=1;
+const q=document.getElementById('q'),no=document.getElementById('no'),yes=document.getElementById('yes');
+
+function dodge(e){
+  if(e&&e.cancelable)e.preventDefault();
+  no.classList.add('fly');
+  const w=no.offsetWidth,h=no.offsetHeight;
+  no.style.left=Math.random()*(innerWidth-w-20)+10+'px';
+  no.style.top=Math.random()*(innerHeight-h-20)+10+'px';
+  q.textContent=msgs[i%msgs.length];i++;
+  scale=Math.min(scale+0.12,2.2);
+  yes.style.transform='scale('+scale+')';
+  if(i>=9){no.classList.add('hide')}
+}
+['pointerenter','touchstart','mousedown','click','focus'].forEach(ev=>no.addEventListener(ev,dodge,{passive:false}));
+
+yes.onclick=()=>{s1.classList.add('hide');s2b.classList.remove('hide');burst()};
+const fecha=document.getElementById('fecha'),hora=document.getElementById('hora'),ok=document.getElementById('ok');
+fecha.min=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+function chk(){ok.disabled=!(fecha.value&&hora.value)}
+fecha.oninput=hora.oninput=chk;
+ok.onclick=()=>{
+  const f=new Date(fecha.value+'T00:00').toLocaleDateString('es-DO',{weekday:'long',day:'numeric',month:'long'});
+  const h=new Date('1970-01-01T'+hora.value).toLocaleTimeString('es-DO',{hour:'numeric',minute:'2-digit',hour12:true});
+  s2b.classList.add('hide');s3.classList.remove('hide');
+  final.textContent=f+' a las '+h+'. Prepárate, que va a estar bueno 🎀';
+  wa.href='https://wa.me/?text='+encodeURIComponent('¡Dije que sí! 🎀 Nos vemos el '+f+' a las '+h);
+  burst();
+};
+const hc=document.getElementById('hearts');
+function heart(){
+  const d=document.createElement('div');d.className='h';
+  d.textContent=['🎀','🌸','💗','🐱','⭐'][Math.random()*5|0];
+  d.style.left=Math.random()*100+'vw';
+  d.style.fontSize=(14+Math.random()*26)+'px';
+  d.style.animationDuration=(6+Math.random()*8)+'s';
+  hc.appendChild(d);setTimeout(()=>d.remove(),14000);
+}
+function burst(){for(let k=0;k<25;k++)setTimeout(heart,k*60)}
+setInterval(heart,500);burst();
+</script>
+</body>
+</html>
